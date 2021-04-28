@@ -152,17 +152,6 @@ class RectangularRoom(object):
         y = pos.getY()
         return (x >= 0) and (x < self.width) and (y >= 0) and (y < self.height)
 
-### Test
-room = RectangularRoom(2, 3)
-room.cleanTileAtPosition(Position(0.6,1.3))
-print(room.getNumCleanedTiles()) #1
-print(room.isTileCleaned(0,1)) #True
-print(room.isTileCleaned(1,0)) #False
-print(room.isTileCleaned(0,0)) #False
-print(room.isTileCleaned(1,1)) #False
-
-room = RectangularRoom(6, 8)
-print(room.isPositionInRoom(Position(6.00, 7.90))) #False
 
 # === Problem 2
 class Robot(object):
@@ -184,7 +173,10 @@ class Robot(object):
         room:  a RectangularRoom object.
         speed: a float (speed > 0)
         """
-        raise NotImplementedError
+        self.room = room
+        self.speed = speed
+        self.pos = self.room.getRandomPosition()
+        self.direction = random.randrange(360)
 
     def getRobotPosition(self):
         """
@@ -192,7 +184,7 @@ class Robot(object):
 
         returns: a Position object giving the robot's position.
         """
-        raise NotImplementedError
+        return self.pos
     
     def getRobotDirection(self):
         """
@@ -201,7 +193,7 @@ class Robot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        raise NotImplementedError
+        return self.direction
 
     def setRobotPosition(self, position):
         """
@@ -209,7 +201,7 @@ class Robot(object):
 
         position: a Position object.
         """
-        raise NotImplementedError
+        self.pos = position
 
     def setRobotDirection(self, direction):
         """
@@ -217,7 +209,7 @@ class Robot(object):
 
         direction: integer representing an angle in degrees
         """
-        raise NotImplementedError
+        self.direction = direction
 
     def updatePositionAndClean(self):
         """
@@ -352,3 +344,16 @@ def showPlot2(title, x_label, y_label):
 #
 #       (... your call here ...)
 #
+
+
+### Test
+room = RectangularRoom(2, 3)
+room.cleanTileAtPosition(Position(0.6,1.3))
+print(room.getNumCleanedTiles()) #1
+print(room.isTileCleaned(0,1)) #True
+print(room.isTileCleaned(1,0)) #False
+print(room.isTileCleaned(0,0)) #False
+print(room.isTileCleaned(1,1)) #False
+
+room = RectangularRoom(6, 8)
+print(room.isPositionInRoom(Position(6.00, 7.90))) #False
