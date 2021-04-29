@@ -177,6 +177,7 @@ class Robot(object):
         self.speed = speed
         self.pos = self.room.getRandomPosition()
         self.direction = random.randrange(360)
+        self.room.cleanTileAtPosition(self.pos)
 
     def getRobotPosition(self):
         """
@@ -237,11 +238,15 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
-
+        new_pos = self.pos.getNewPosition(self.direction, self.speed)
+        while not self.room.isPositionInRoom(new_pos):
+            self.direction = random.randrange(360)
+            new_pos = self.pos.getNewPosition(self.direction, self.speed)
+        self.pos = new_pos
+        self.room.cleanTileAtPosition(self.pos)
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-##testRobotMovement(StandardRobot, RectangularRoom)
+# testRobotMovement(StandardRobot, RectangularRoom)
 
 
 # === Problem 4
@@ -263,10 +268,21 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 RandomWalkRobot)
     """
-    raise NotImplementedError
+    results = []
+    for _ in range(num_trials):
+        myroom = RectangularRoom(width, height)
+        myroom_size = myroom.getNumTiles()
+        robots = [robot_type(myroom, speed) for _ in range(num_robots)]
+        steps = 0
+        while myroom.getNumCleanedTiles() / myroom_size < min_coverage:
+            for myrobot in robots:
+                myrobot.updatePositionAndClean()
+            steps += 1
+        results.append(steps)
+    return sum(results) / len(results)
 
 # Uncomment this line to see how much your simulation takes on average
-##print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
 
 
 # === Problem 5
@@ -347,13 +363,13 @@ def showPlot2(title, x_label, y_label):
 
 
 ### Test
-room = RectangularRoom(2, 3)
-room.cleanTileAtPosition(Position(0.6,1.3))
-print(room.getNumCleanedTiles()) #1
-print(room.isTileCleaned(0,1)) #True
-print(room.isTileCleaned(1,0)) #False
-print(room.isTileCleaned(0,0)) #False
-print(room.isTileCleaned(1,1)) #False
+# room = RectangularRoom(2, 3)
+# room.cleanTileAtPosition(Position(0.6,1.3))
+# print(room.getNumCleanedTiles()) #1
+# print(room.isTileCleaned(0,1)) #True
+# print(room.isTileCleaned(1,0)) #False
+# print(room.isTileCleaned(0,0)) #False
+# print(room.isTileCleaned(1,1)) #False
 
-room = RectangularRoom(6, 8)
-print(room.isPositionInRoom(Position(6.00, 7.90))) #False
+# room = RectangularRoom(6, 8)
+# print(room.isPositionInRoom(Position(6.00, 7.90))) #False
